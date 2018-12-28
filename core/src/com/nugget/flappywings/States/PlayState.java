@@ -9,8 +9,6 @@ import com.nugget.flappywings.FlappyBird;
 import com.nugget.flappywings.sprites.Bird;
 import com.nugget.flappywings.sprites.Tube;
 
-import java.util.ArrayList;
-import java.util.Random;
 
 public class PlayState extends State {
     private static final int TUBE_SPACING = 125;
@@ -38,7 +36,6 @@ public class PlayState extends State {
         for(int i = 1; i <= TUBE_COUNT; i++){
             tubes.add(new Tube(i* (TUBE_SPACING + Tube.TUBE_WIDTH)));
         }
-
     }
 
     @Override
@@ -58,14 +55,23 @@ public class PlayState extends State {
             if((cam.position.x - (cam.viewportWidth/2)) > tube.getPosTopTube().x + tube.getTopTube().getWidth()){
                 tube.reposition(tube.getPosTopTube().x + ((Tube.TUBE_WIDTH + TUBE_SPACING)* TUBE_COUNT));
             }
-            if(tube.collides(bird.getBounds())){
-                gsm.set(new PlayState(gsm));
+            if(bird.isBirdAlive()) {
+                if (tube.collides(bird.getBounds())) {
+                    bird.death();
+                }
             }
         }
         updateGround();
-        if(bird.getPosition().y <= ground.getHeight() + GROUND_Y_OFFSET){
-            gsm.set(new PlayState(gsm));
+        if(bird.isBirdAlive()){
+            if(bird.getPosition().y <= ground.getHeight() + GROUND_Y_OFFSET){
+                bird.death();
+            }
+        }else if(!bird.isBirdAlive()){
+            if(!bird.isMusicPlaying()) {
+                gsm.set(new PlayState(gsm));
+            }
         }
+
         cam.update();
     }
 
@@ -74,13 +80,18 @@ public class PlayState extends State {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         sb.draw(background,cam.position.x - (cam.viewportWidth/2),0,cam.viewportWidth,cam.viewportHeight);
-        sb.draw(bird.getTexture(),bird.getPosition().x,bird.getPosition().y);
         for(Tube tube:tubes) {
             sb.draw(tube.getTopTube(), tube.getPosTopTube().x, tube.getPosTopTube().y);
             sb.draw(tube.getBottomTube(), tube.getPosBotTube().x, tube.getPosBotTube().y);
         }
         sb.draw(ground,groundpos1.x,GROUND_Y_OFFSET);
         sb.draw(ground,groundpos2.x,GROUND_Y_OFFSET);
+        if(bird.isBirdAlive()){
+            sb.draw(bird.getTexture(),bird.getPosition().x,bird.getPosition().y);
+        }
+        else if(!bird.isBirdAlive()) {
+            sb.draw(bird.getDeathTexture(), bird.getPosition().x, bird.getPosition().y);
+        }
         sb.end();
     }
 

@@ -18,8 +18,8 @@ public class Tube {
 
     public Tube(float x){
         rand = new Random();
-        topTube = new Texture("toptube.png");
-        bottomTube = new Texture("bottomtube.png");
+        topTube = new Texture("Nuggettoptube.png");
+        bottomTube = new Texture("Nuggetbottomtube.png");
 
         posTopTube = new Vector2(x,rand.nextInt(FLUCTUATION) + TUBE_GAP + LOWEST_OPENING);
         posBotTube = new Vector2(x,posTopTube.y - TUBE_GAP - bottomTube.getHeight());
